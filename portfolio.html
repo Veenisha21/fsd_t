@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veenisha | Developer Portfolio</title>
+  <style>
+    :root {
+      --primary: #0056b3;
+      --accent: #007bff;
+      --bg: #f4f6f9;
+      --text: #333;
+      --radius: 8px;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    section {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    h2 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .skills ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .skills li {
+      background: white;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .projects .card {
+      background: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .resume a {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: var(--accent);
+      color: white;
+      text-decoration: none;
+      border-radius: var(--radius);
+      margin-top: 10px;
+    }
+
+    .contact p {
+      margin: 5px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #ddd;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Veenisha</h1>
+    <p>Web Developer | Cloud Enthusiast | Resume Optimizer</p>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#resume">Resume</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section id="about">
+    <h2>About Me</h2>
+    <p>Hi! I'm Veenisha, a resourceful and curious developer passionate about building practical web applications that help others. I'm currently working on an LLM-powered resume review tool to assist job seekers in optimizing their resumes. I love learning by doing and thrive on real-world impact.</p>
+  </section>
+
+  <section id="skills" class="skills">
+    <h2>Skills</h2>
+    <ul>
+      <li><strong>Programming:</strong> Python, C++, HTML, CSS, Bootstrap</li>
+      <li><strong>Web Design:</strong> Responsive layouts, UI/UX fundamentals</li>
+      <li><strong>Cloud:</strong> AWS (EBS volumes, permissions)</li>
+      <li><strong>Tools:</strong> Git, VS Code, Postman</li>
+    </ul>
+  </section>
+
+  <section id="projects" class="projects">
+    <h2>Projects</h2>
+    <div class="card">
+      <h3>Resume Review App</h3>
+      <p>A web tool that uses LLMs to analyze and improve resumes based on job descriptions. Built with Flask, Bootstrap, and OpenAI API.</p>
+      <p><a href="#">GitHub Link</a></p>
+    </div>
+    <div class="card">
+      <h3>Responsive Timetable Layout</h3>
+      <p>Designed a clean, responsive timetable using HTML, CSS, and Bootstrap for college scheduling.</p>
+      <p><a href="#">Live Demo</a></p>
+    </div>
+  </section>
+
+  <section id="resume" class="resume">
+    <h2>Resume</h2>
+    <p>Download my professional resume tailored for IT sector roles.</p>
+    <a href="#">Download PDF</a>
+  </section>
+
+  <section id="contact" class="contact">
+    <h2>Contact</h2>
+    <p>Email: veenisha@example.com</p>
+    <p>LinkedIn: linkedin.com/in/veenisha</p>
+    <p>GitHub: github.com/veenisha</p>
+  </section>
+
+  <footer>
+    &copy; 2025 Veenisha. All rights reserved.
+  </footer>
+
+</body>
+</html>
