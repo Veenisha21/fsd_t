@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f7;
+        }
+
+        .tuflih-blue-bg {
+            background-color: #3b82f6;
+        }
+        .tuflih-blue-text {
+            color: #3b82f6;
+        }
+        .tuflih-blue-border {
+            border-color: #3b82f6;
+        }
+
+        .tab-button.active {
+            background-color: #f0f4f7;
+            border-bottom: 2px solid #3b82f6;
+            color: #1f2937;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Custom scrollbar for demo purposes */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Mobile-first collapsible sections */
+        @media (max-width: 768px) {
+            .collapsible-header {
+                cursor: pointer;
+            }
+
+            .collapsible-content {
+                display: none;
+            }
+
+            .collapsible-content.active {
+                display: block;
+            }
+
+            .collapsible-header .chevron {
+                transition: transform 0.3s ease-in-out;
+            }
+            .collapsible-header.open .chevron {
+                transform: rotate(180deg);
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-gray-800">
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 md:p-8">
+
+        <!-- Top Header -->
+        <header class="flex flex-col md:flex-row items-center justify-between bg-white rounded-2xl shadow-sm p-4 mb-6">
+            <div class="flex items-center w-full md:w-auto mb-4 md:mb-0">
+                <img id="profilePhoto" src="https://placehold.co/80x80/3b82f6/FFFFFF?text=AS" alt="Alex Smith" class="rounded-full w-20 h-20 border-4 border-white mr-4 shadow-sm">
+                <div class="flex-1">
+                    <h1 id="headerName" class="text-2xl font-bold">Alex Smith</h1>
+                    <p class="text-sm text-gray-600">Computer Science Student</p>
+                    <div class="flex items-center mt-1">
+                        <span class="text-yellow-400">
+                            <i class="fas fa-star"></i>
+                        </span>
+                        <span id="headerGpa" class="text-sm font-semibold ml-1 mr-2 text-gray-700">4.2 GPA</span>
+                        <span class="bg-blue-100 text-tuflih-blue-text text-xs font-medium px-2.5 py-1 rounded-full">Rising Star</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-4 w-full md:w-auto justify-end">
+                <button class="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i class="fas fa-search"></i></button>
+                <button class="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i class="fas fa-bell"></i></button>
+                <button class="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i class="fas fa-cog"></i></button>
+            </div>
+        </header>
+
+        <!-- Profile Completion Section -->
+        <section class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <div class="flex items-center mb-4">
+                <i class="fas fa-check-circle text-tuflih-blue-text mr-2 text-lg"></i>
+                <h2 class="text-lg font-semibold">Profile Completion</h2>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progressBar" class="tuflih-blue-bg h-2.5 rounded-full transition-all duration-500 ease-in-out" style="width: 0%;"></div>
+                </div>
+                <span id="progressText" class="text-sm font-semibold text-gray-600 w-10 text-right">0%</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">Complete your profile to unlock personalized learning recommendations.</p>
+        </section>
+
+        <!-- Tabbed Navigation and Content -->
+        <div class="bg-white rounded-2xl shadow-sm p-6 mb-6">
+            <!-- Tab Links -->
+            <div class="flex flex-wrap md:flex-nowrap border-b border-gray-200 mb-6">
+                <button class="tab-button active flex items-center p-3 text-sm font-medium transition-colors w-full md:w-auto justify-center" onclick="openTab('personal', this)">
+                    <i class="fas fa-user-circle mr-2 hidden md:inline-block"></i>Personal
+                </button>
+                <button class="tab-button flex items-center p-3 text-sm font-medium transition-colors w-full md:w-auto justify-center" onclick="openTab('academic', this)">
+                    <i class="fas fa-graduation-cap mr-2 hidden md:inline-block"></i>Academic
+                </button>
+                <button class="tab-button flex items-center p-3 text-sm font-medium transition-colors w-full md:w-auto justify-center" onclick="openTab('skills', this)">
+                    <i class="fas fa-cogs mr-2 hidden md:inline-block"></i>Skills
+                </button>
+                <button class="tab-button flex items-center p-3 text-sm font-medium transition-colors w-full md:w-auto justify-center" onclick="openTab('background', this)">
+                    <i class="fas fa-briefcase mr-2 hidden md:inline-block"></i>Background
+                </button>
+                <button class="tab-button flex items-center p-3 text-sm font-medium transition-colors w-full md:w-auto justify-center" onclick="openTab('goals', this)">
+                    <i class="fas fa-bullseye mr-2 hidden md:inline-block"></i>AI Goals
+                </button>
+            </div>
+
+            <!-- Content Sections -->
+            <div id="personal" class="content-section active">
+                <div class="collapsible-header md:hidden p-4 bg-gray-50 rounded-lg mb-4 flex justify-between items-center" onclick="toggleCollapsible('personal')">
+                    <h3 class="font-semibold">Personal Information</h3>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="personal-content" class="collapsible-content active">
+                    <h3 class="text-lg font-semibold mb-4 hidden md:block">Personal Information</h3>
+                    <form id="personalForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="profileUpload" class="block text-sm font-medium text-gray-700">Profile Photo</label>
+                            <input type="file" id="profileUpload" name="profileUpload" accept="image/*" class="profile-input mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onchange="uploadProfilePhoto(event)">
+                        </div>
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                            <input type="text" id="fullName" name="fullName" value="Alex Smith" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text" oninput="updateHeaderInfo()">
+                        </div>
+                        <div>
+                            <label for="dob" class="block text-sm font-medium text-gray-700">Date of Birth</label>
+                            <input type="date" id="dob" name="dob" value="2001-05-15" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                            <select id="gender" name="gender" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                                <option value="">Prefer not to say</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="nonbinary">Non-binary</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
+                            <select id="nationality" name="nationality" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                                <option value="">Select</option>
+                                <option value="us">United States</option>
+                                <option value="ca">Canada</option>
+                                <option value="uk">United Kingdom</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="firstLanguage" class="block text-sm font-medium text-gray-700">First Language</label>
+                            <input type="text" id="firstLanguage" name="firstLanguage" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="email" name="email" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                            <input type="tel" id="phone" name="phone" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
+                            <input type="text" id="country" name="country" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="state" class="block text-sm font-medium text-gray-700">State/Province</label>
+                            <input type="text" id="state" name="state" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                            <input type="text" id="city" name="city" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="zipCode" class="block text-sm font-medium text-gray-700">Zip Code</label>
+                            <input type="text" id="zipCode" name="zipCode" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="passportNumber" class="block text-sm font-medium text-gray-700">Passport Number (optional)</label>
+                            <input type="text" id="passportNumber" name="passportNumber" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="academic" class="content-section">
+                <div class="collapsible-header md:hidden p-4 bg-gray-50 rounded-lg mb-4 flex justify-between items-center" onclick="toggleCollapsible('academic')">
+                    <h3 class="font-semibold">Academic Information</h3>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="academic-content" class="collapsible-content">
+                    <h3 class="text-lg font-semibold mb-4 hidden md:block">Academic Information</h3>
+
+                    <!-- College Details -->
+                    <div id="collegeDetailsSection" class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h4 class="font-bold text-gray-800 mb-4">College Details</h4>
+                        <form id="collegeForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="collegeName" class="block text-sm font-medium text-gray-700">College Name</label>
+                                <input type="text" id="collegeName" name="collegeName" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="course" class="block text-sm font-medium text-gray-700">Course / Degree</label>
+                                <input type="text" id="course" name="course" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="sgpa" class="block text-sm font-medium text-gray-700">Current SGPA (Semester Grade Point Average)</label>
+                                <input type="number" id="sgpa" name="sgpa" step="0.01" min="0" max="10" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="cgpa" class="block text-sm font-medium text-gray-700">Overall CGPA (Cumulative Grade Point Average)</label>
+                                <input type="number" id="cgpa" name="cgpa" step="0.01" min="0" max="10" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text" oninput="updateHeaderInfo()">
+                            </div>
+                            <div>
+                                <label for="collegeStartDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                                <input type="date" id="collegeStartDate" name="collegeStartDate" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="collegeEndDate" class="block text-sm font-medium text-gray-700">End Date</label>
+                                <input type="date" id="collegeEndDate" name="collegeEndDate" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 12th Class Details -->
+                    <div class="mb-6 p-4 border rounded-lg bg-gray-50">
+                        <h4 class="font-bold text-gray-800 mb-4">12th Class Details</h4>
+                        <form id="twelfthForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="twelfthSchool" class="block text-sm font-medium text-gray-700">School Name</label>
+                                <input type="text" id="twelfthSchool" name="twelfthSchool" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="twelfthBoard" class="block text-sm font-medium text-gray-700">Board / Affiliation</label>
+                                <input type="text" id="twelfthBoard" name="twelfthBoard" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="twelfthPercentage" class="block text-sm font-medium text-gray-700">Percentage / Grade</label>
+                                <input type="text" id="twelfthPercentage" name="twelfthPercentage" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="twelfthYear" class="block text-sm font-medium text-gray-700">Year of Completion</label>
+                                <input type="number" id="twelfthYear" name="twelfthYear" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 10th Class Details -->
+                    <div class="p-4 border rounded-lg bg-gray-50">
+                        <h4 class="font-bold text-gray-800 mb-4">10th Class Details</h4>
+                        <form id="tenthForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="tenthSchool" class="block text-sm font-medium text-gray-700">School Name</label>
+                                <input type="text" id="tenthSchool" name="tenthSchool" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="tenthBoard" class="block text-sm font-medium text-gray-700">Board / Affiliation</label>
+                                <input type="text" id="tenthBoard" name="tenthBoard" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="tenthPercentage" class="block text-sm font-medium text-gray-700">Percentage / Grade</label>
+                                <input type="text" id="tenthPercentage" name="tenthPercentage" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                            <div>
+                                <label for="tenthYear" class="block text-sm font-medium text-gray-700">Year of Completion</label>
+                                <input type="number" id="tenthYear" name="tenthYear" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="skills" class="content-section">
+                <div class="collapsible-header md:hidden p-4 bg-gray-50 rounded-lg mb-4 flex justify-between items-center" onclick="toggleCollapsible('skills')">
+                    <h3 class="font-semibold">Skills & Interests</h3>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="skills-content" class="collapsible-content">
+                    <h3 class="text-lg font-semibold mb-4 hidden md:block">Skills & Interests</h3>
+                    <form id="skillsForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="technicalSkills" class="block text-sm font-medium text-gray-700">Technical Skills (e.g., Python, SQL, Web Dev)</label>
+                            <input type="text" id="technicalSkills" name="technicalSkills" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="softSkills" class="block text-sm font-medium text-gray-700">Soft Skills (e.g., Communication, Leadership)</label>
+                            <input type="text" id="softSkills" name="softSkills" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="careerInterests" class="block text-sm font-medium text-gray-700">Career Interests</label>
+                            <input type="text" id="careerInterests" name="careerInterests" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="learningStyle" class="block text-sm font-medium text-gray-700">Learning Style Preferences</label>
+                            <select id="learningStyle" name="learningStyle" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                                <option value="">Select</option>
+                                <option value="visual">Visual</option>
+                                <option value="auditory">Auditory</option>
+                                <option value="kinesthetic">Kinesthetic</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="languagesSpoken" class="block text-sm font-medium text-gray-700">Languages Spoken</label>
+                            <input type="text" id="languagesSpoken" name="languagesSpoken" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                    </form>
+                    <div class="mt-4">
+                        <button onclick="addSkillDetail()" class="bg-gray-200 text-gray-700 text-sm font-semibold py-2 px-4 rounded-full hover:bg-gray-300 transition-colors">
+                            Add More Skills
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="background" class="content-section">
+                <div class="collapsible-header md:hidden p-4 bg-gray-50 rounded-lg mb-4 flex justify-between items-center" onclick="toggleCollapsible('background')">
+                    <h3 class="font-semibold">Background Information</h3>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="background-content" class="collapsible-content">
+                    <h3 class="text-lg font-semibold mb-4 hidden md:block">Background Information</h3>
+                    <form id="backgroundForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="workExperience" class="block text-sm font-medium text-gray-700">Work Experience (if any)</label>
+                            <textarea id="workExperience" name="workExperience" rows="3" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text"></textarea>
+                        </div>
+                        <div>
+                            <label for="extracurricular" class="block text-sm font-medium text-gray-700">Extracurricular Activities</label>
+                            <input type="text" id="extracurricular" name="extracurricular" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="volunteering" class="block text-sm font-medium text-gray-700">Volunteering / Projects</label>
+                            <textarea id="volunteering" name="volunteering" rows="3" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text"></textarea>
+                        </div>
+                        <div>
+                            <label for="socioeconomic" class="block text-sm font-medium text-gray-700">Socioeconomic Background (optional)</label>
+                            <input type="text" id="socioeconomic" name="socioeconomic" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="goals" class="content-section">
+                <div class="collapsible-header md:hidden p-4 bg-gray-50 rounded-lg mb-4 flex justify-between items-center" onclick="toggleCollapsible('goals')">
+                    <h3 class="font-semibold">AI Preferences & Goals</h3>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="goals-content" class="collapsible-content">
+                    <h3 class="text-lg font-semibold mb-4 hidden md:block">AI Preferences & Goals</h3>
+                    <form id="goalsForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="shortTermGoals" class="block text-sm font-medium text-gray-700">Short-Term Learning Goals</label>
+                            <input type="text" id="shortTermGoals" name="shortTermGoals" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="longTermGoals" class="block text-sm font-medium text-gray-700">Long-Term Career Goals</label>
+                            <input type="text" id="longTermGoals" name="longTermGoals" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                        </div>
+                        <div>
+                            <label for="learningPace" class="block text-sm font-medium text-gray-700">Preferred Learning Pace</label>
+                            <select id="learningPace" name="learningPace" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                                <option value="">Select</option>
+                                <option value="fast">Fast</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="relaxed">Relaxed</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action Button -->
+        <div class="flex justify-end p-4">
+            <button id="saveProfileBtn" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition-colors" onclick="saveProfile()">
+                Save Profile
+            </button>
+        </div>
+        
+        <!-- Confirmation Message -->
+        <div id="confirmationMessage" class="hidden fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+            <div class="bg-white p-8 rounded-lg shadow-xl text-center">
+                <h3 class="text-xl font-bold mb-4">Profile Saved!</h3>
+                <p class="text-gray-600">Your profile information has been successfully updated.</p>
+                <button class="mt-6 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700" onclick="closeConfirmation()">OK</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Tab switching logic for desktop view
+        function openTab(tabName, element) {
+            if (window.innerWidth <= 768) {
+                return;
+            }
+            
+            const contentSections = document.querySelectorAll('.content-section');
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // Collapsible section logic for mobile view
+        function toggleCollapsible(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const header = document.querySelector(`#${sectionId} .collapsible-header`);
+            const isActive = content.classList.contains('active');
+
+            const allCollapsibles = document.querySelectorAll('.collapsible-content');
+            const allHeaders = document.querySelectorAll('.collapsible-header');
+            allCollapsibles.forEach(c => c.classList.remove('active'));
+            allHeaders.forEach(h => h.classList.remove('open'));
+
+            if (!isActive) {
+                content.classList.add('active');
+                header.classList.add('open');
+            }
+        }
+
+        // Function to update the progress bar and button
+        function updateProfileProgress() {
+            const profileInputs = document.querySelectorAll('.profile-input');
+            const totalFields = profileInputs.length;
+            let completedFields = 0;
+
+            profileInputs.forEach(input => {
+                if (input.value.trim() !== '' && !input.classList.contains('optional')) {
+                    completedFields++;
+                }
+            });
+
+            const progressPercentage = Math.round((completedFields / totalFields) * 100);
+            document.getElementById('progressBar').style.width = progressPercentage + '%';
+            document.getElementById('progressText').textContent = progressPercentage + '%';
+        }
+
+        // Function to update the header dynamically based on form input
+        function updateHeaderInfo() {
+            const fullNameInput = document.getElementById('fullName');
+            if (fullNameInput) {
+                document.getElementById('headerName').textContent = fullNameInput.value || "Alex Smith";
+            }
+            const gpaInput = document.getElementById('gpa');
+            if (gpaInput) {
+                document.getElementById('headerGpa').textContent = (gpaInput.value || '4.2') + ' GPA';
+            }
+        }
+
+        // Function to save the profile and show a confirmation message
+        function saveProfile() {
+            document.getElementById('confirmationMessage').classList.remove('hidden');
+        }
+
+        // Function to close the confirmation message
+        function closeConfirmation() {
+            document.getElementById('confirmationMessage').classList.add('hidden');
+        }
+
+        // Function to add more academic details (College)
+        function addAcademicDetail() {
+            const collegeForm = document.getElementById('collegeForm');
+            const newFields = `
+                <div class="col-span-1 md:col-span-2 mt-4 p-4 border rounded-lg bg-gray-50 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="col-span-1 md:col-span-2 font-semibold">Additional College Details</p>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">College Name</label>
+                        <input type="text" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Course / Degree</label>
+                        <input type="text" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Current SGPA</label>
+                        <input type="number" step="0.01" min="0" max="10" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Overall CGPA</label>
+                        <input type="number" step="0.01" min="0" max="10" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                </div>
+            `;
+            collegeForm.insertAdjacentHTML('beforeend', newFields);
+            updateProfileProgress();
+        }
+
+        // Function to add more skills
+        function addSkillDetail() {
+            const skillsForm = document.getElementById('skillsForm');
+            const newFields = `
+                <div class="col-span-1 md:col-span-2 mt-4 p-4 border rounded-lg bg-gray-50 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p class="col-span-1 md:col-span-2 font-semibold">New Skill</p>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Technical Skill</label>
+                        <input type="text" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Soft Skill</label>
+                        <input type="text" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Career Interest</label>
+                        <input type="text" class="profile-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-tuflih-blue-text focus:ring-tuflih-blue-text">
+                    </div>
+                </div>
+            `;
+            skillsForm.insertAdjacentHTML('beforeend', newFields);
+            updateProfileProgress();
+        }
+
+        // Function to handle profile photo upload and update the image
+        function uploadProfilePhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const profilePhoto = document.getElementById('profilePhoto');
+                    if (profilePhoto) {
+                        profilePhoto.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Add event listeners to all profile inputs for real-time validation
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('input', updateProfileProgress);
+        });
+
+        // Initial update on page load
+        document.addEventListener('DOMContentLoaded', updateProfileProgress);
+    </script>
+</body>
+</html>
