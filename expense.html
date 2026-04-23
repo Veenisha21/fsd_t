@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+           
+        }
+        .input-group label {
+            font-weight: 500;
+        }
+        .input-group input {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+        .expense-table th, .expense-table td {
+            padding: 0.75rem 0;
+            text-align: left;
+        }
+        .expense-table th {
+            font-weight: 600;
+            color: #6b7280;
+        }
+        .expense-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-3xl font-bold text-center mb-6">Expense Tracker</h1>
+
+    <div class="space-y-4">
+        <div class="input-group">
+            <label for="expenseName" class="block text-gray-700">Expense Name</label>
+            <input type="text" id="expenseName" placeholder="e.g. Groceries">
+        </div>
+        <div class="input-group">
+            <label for="amount" class="block text-gray-700">Amount (₹)</label>
+            <input type="number" id="amount" placeholder="e.g. 500">
+        </div>
+        <div class="input-group">
+            <label for="description" class="block text-gray-700">Description</label>
+            <input type="text" id="description" placeholder="e.g. Bought fruits and vegetables">
+        </div>
+        <div class="input-group">
+            <label for="date" class="block text-gray-700">Date</label>
+            <input type="date" id="date">
+        </div>
+        <button id="addExpenseBtn" class="w-full bg-gray-900 text-white font-semibold py-2 rounded-lg hover:bg-gray-700 transition duration-200">Add Expense</button>
+    </div>
+
+    <div class="mt-8">
+        <div class="flex items-center space-x-4 mb-4">
+            <div class="input-group flex-grow">
+                <label for="searchByName" class="block text-gray-700">Search by Name</label>
+                <input type="text" id="searchByName" placeholder="e.g. Groceries">
+            </div>
+            <div class="input-group">
+                <label for="searchByDate" class="block text-gray-700">Search by Date</label>
+                <input type="date" id="searchByDate">
+            </div>
+        </div>
+
+        <table class="w-full border-collapse expense-table">
+            <thead>
+                <tr>
+                    <th class="border-b">Name</th>
+                    <th class="border-b">Amount</th>
+                    <th class="border-b">Description</th>
+                    <th class="border-b">Date</th>
+                    <th class="border-b">Action</th>
+                </tr>
+            </thead>
+            <tbody id="expensesTableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex justify-end mt-4">
+        <h3 class="text-lg font-bold">Total: <span id="totalAmount">₹0</span></h3>
+    </div>
+</div>
+
+<script type="module">
+    // Firebase Imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { setLogLevel } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    setLogLevel('debug');
+
+    // Firebase configuration from the Canvas environment
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let userId = null;
+
+    // UI Elements
+    const addExpenseBtn = document.getElementById('addExpenseBtn');
+    const expensesTableBody = document.getElementById('expensesTableBody');
+    const totalAmountSpan = document.getElementById('totalAmount');
+    const expenseNameInput = document.getElementById('expenseName');
+    const amountInput = document.getElementById('amount');
+    const descriptionInput = document.getElementById('description');
+    const dateInput = document.getElementById('date');
+    const searchByNameInput = document.getElementById('searchByName');
+    const searchByDateInput = document.getElementById('searchByDate');
+    
+    // Function to calculate and update total
+    const updateTotals = (expenses) => {
+        const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+        totalAmountSpan.textContent = `₹${total}`;
+    };
+
+    // Function to render expenses to the table
+    const renderExpenses = (expenses) => {
+        expensesTableBody.innerHTML = '';
+        if (expenses.length === 0) {
+            expensesTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-4">No expenses found.</td></tr>';
+            return;
+        }
+
+        expenses.forEach(expense => {
+            const row = document.createElement('tr');
+            row.className = 'border-b';
+            row.innerHTML = `
+                <td>${expense.name}</td>
+                <td>₹${expense.amount}</td>
+                <td class="text-sm text-gray-500 truncate max-w-xs">${expense.description}</td>
+                <td>${expense.date}</td>
+                <td class="text-center">
+                    <button data-id="${expense.id}" class="delete-btn text-red-500 hover:text-red-700 transition-colors">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            `;
+            expensesTableBody.appendChild(row);
+        });
+    };
+
+    // Auth state listener and Firestore setup
+    const setupFirestore = (user) => {
+        userId = user.uid;
+        const expensesCollectionPath = `/artifacts/${appId}/users/${userId}/expenses`;
+        
+        const updateTable = () => {
+            let q = query(collection(db, expensesCollectionPath));
+            
+            // Apply search filters
+            const searchQuery = searchByNameInput.value.trim().toLowerCase();
+            if (searchQuery) {
+                // Note: Firestore does not support case-insensitive contains queries out of the box.
+                // This is a basic filter for demonstration.
+                q = query(q, where('name', '>=', searchQuery), where('name', '<=', searchQuery + '\uf8ff'));
+            }
+
+            const searchDate = searchByDateInput.value;
+            if (searchDate) {
+                q = query(q, where('date', '==', searchDate));
+            }
+
+            onSnapshot(q, (snapshot) => {
+                const expenses = [];
+                snapshot.forEach(doc => {
+                    expenses.push({ id: doc.id, ...doc.data() });
+                });
+                renderExpenses(expenses);
+                updateTotals(expenses);
+            }, (error) => {
+                console.error("Error listening to snapshot: ", error);
+            });
+        };
+
+        searchByNameInput.addEventListener('input', updateTable);
+        searchByDateInput.addEventListener('change', updateTable);
+        
+        // Initial load
+        updateTable();
+    };
+
+    // Authentication
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            setupFirestore(user);
+        } else {
+            console.log('User signed out or not authenticated. Signing in anonymously...');
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error('Authentication failed:', error);
+            }
+        }
+    });
+
+    // Event Listeners
+    addExpenseBtn.addEventListener('click', async () => {
+        const name = expenseNameInput.value.trim();
+        const amount = parseFloat(amountInput.value);
+        const description = descriptionInput.value.trim();
+        const date = dateInput.value;
+
+        if (!name || !amount || amount <= 0 || !date || !userId) {
+            console.error("Please fill in all fields correctly and ensure user is authenticated.");
+            return;
+        }
+
+        const newExpense = {
+            name,
+            amount,
+            description,
+            date,
+            createdAt: new Date().toISOString()
+        };
+
+        try {
+            const expensesCollectionPath = `/artifacts/${appId}/users/${userId}/expenses`;
+            await addDoc(collection(db, expensesCollectionPath), newExpense);
+            // Clear inputs after successful addition
+            expenseNameInput.value = '';
+            amountInput.value = '';
+            descriptionInput.value = '';
+            dateInput.value = '';
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    });
+
+    // Delegated event listener for delete buttons
+    document.addEventListener('click', async (e) => {
+        if (e.target.closest('.delete-btn')) {
+            const deleteBtn = e.target.closest('.delete-btn');
+            const docId = deleteBtn.getAttribute('data-id');
+            if (docId && userId) {
+                try {
+                    const expensesCollectionPath = `/artifacts/${appId}/users/${userId}/expenses`;
+                    const docRef = doc(db, expensesCollectionPath, docId);
+                    await deleteDoc(docRef);
+                } catch (error) {
+                    console.error("Error removing document: ", error);
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
